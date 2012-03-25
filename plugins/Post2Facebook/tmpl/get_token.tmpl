@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Get Facebook Access Token</title>
+  </head>
+<body>
+<mt:if name="error">
+<p><__trans phrase="An Error Occured."></p>
+<mt:else>
+</mt:if>
+<script type="text/javascript">
+<mt:unless name="error">
+<mt:unless name="request.set_plugin_data">
+var vars = [], hash;
+var hashes = window.location.hash.substr( 1 ).split( '&' );
+for ( var i = 0; i < hashes.length; i++ ) {
+    hash = hashes[ i ].split( '=' );
+    vars.push( hash[ 0 ] );
+    vars[ hash[ 0 ] ] = hash[ 1 ];
+}
+<mt:unless name="request.edit_entry">
+opener.jQuery( '#FacebookGetAppToken' ).val( parseInt( ( new Date ) / 1000 ) );
+opener.jQuery( '#FacebookPostAppToken' ).val( vars[ 'access_token' ] );
+window.close();
+<mt:else>
+window.location.href = '<mt:var name="script_url">?__mode=get_facebook_oauth_access_token&set_plugin_data=1&blog_id=<mt:var name="blog_id" escape="url">&status_msg=<mt:var name="request.status_msg" escape="url">&access_token=' + vars[ 'access_token' ];
+</mt:unless>
+<mt:else>
+opener.jQuery( '#<mt:var name="request.status_msg">' ).css( 'display', 'none' );
+opener.jQuery( '#facebook-api-link' ).css( 'display', 'none' );
+window.close();
+</mt:unless>
+</mt:unless>
+</script>
+</body>
+</html>

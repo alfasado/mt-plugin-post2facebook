@@ -1,0 +1,41 @@
+name: Post2Facebook
+id:   Post2Facebook
+key:  post2facebook
+author_name: Alfasado Inc.
+author_link: http://alfasado.net/
+version: 0.5
+l10n_class: Post2Facebook::L10N
+description: <__trans phrase='Post entry to Facebook.'>
+blog_config_template: post2facebook_config.tmpl
+settings:
+    FacebookPostAppID:
+    FacebookPostAppSecret:
+    FacebookPostAppToken:
+    FacebookGetAppToken:
+    FacebookPostTemplate:
+        default: '<$MTEntryClass setvar="entry_class"$><mt:if name="entry_class" eq="entry"><$MTEntryTitle$><mt:else><$MTPageTitle$></mt:if>'
+    FacebookPostMessageTemplate:
+        default: '<$MTEntryClass setvar="entry_class"$><mt:if name="entry_class" eq="entry"><$MTEntryExcerpt remove_html="1"><mt:else><$MTPageExcerpt$></mt:if>'
+    FacebookPostCaptionTemplate:
+        default: '<$MTBlogName remove_html="1">'
+    FacebookPostDescriptionTemplate:
+        default: '<$MTBlogDescription remove_html="1">'
+    FacebookPostPictureTemplate:
+        default: '<$MTEntryClass setvar="entry_class"$><mt:if name="entry_class" eq="entry"><MTEntryAssets lastn="1"><mt:setvar name="counter" value="1"><$MTAssetURL$></MTEntryAssets><mt:else><MTPageAssets lastn="1"><mt:setvar name="counter" value="1"><$MTAssetURL$></MTPageAssets></mt:if><mt:unless name="counter"><mt:assets tag="Facebook"><$MTAssetURL$></mt:assets></mt:unless>'
+    FacebookPostEntry:
+        default: 1
+    FacebookPostPage:
+    FacebookPostEntry4Page:
+    FacebookPostPage4Page:
+    FacebookPostPageName:
+    FacebookPostEntryCustomField:
+    FacebookPostPageCustomField:
+callbacks:
+    cms_post_save.entry: $post2facebook::Post2Facebook::Plugin::_post2facebook
+    cms_post_save.page: $post2facebook::Post2Facebook::Plugin::_post2facebook
+    MT::App::CMS::template_param.edit_entry: $post2facebook::Post2Facebook::Plugin::_cb_tp_param_edit_entry
+    scheduled_post_published: $post2facebook::Post2Facebook::Plugin::_cb_scheduled_post_published
+applications:
+    cms:
+        methods:
+            get_facebook_oauth_access_token: $post2facebook::Post2Facebook::Plugin::_get_facebook_oauth_access_token

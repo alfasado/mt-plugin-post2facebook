@@ -1,0 +1,98 @@
+<mtapp:setting
+    id="FacebookPostAppID"
+    label="<__trans phrase="App ID/API Key">">
+    <input type="text" class="text" id="FacebookPostAppID" name="FacebookPostAppID" value="<mt:var name="FacebookPostAppID" escape="html">" />
+    <mt:if name="FacebookPostAppID"><a href="https://developers.facebook.com/apps/<mt:var name="FacebookPostAppID" escape="url">" target="_blank"><__trans phrase="Edit Facebook App"></a><mt:else><a href="https://developers.facebook.com/apps" target="__blank"><__trans phrase="Create Facebook App"></a></mt:if>
+</mtapp:setting>
+<mtapp:setting
+    id="FacebookPostAppSecret"
+    label="<__trans phrase="App Secret">">
+    <input type="password" class="text" id="FacebookPostAppSecret" name="FacebookPostAppSecret" value="<mt:var name="FacebookPostAppSecret" escape="html">" />
+</mtapp:setting>
+<mt:if name="FacebookPostAppID">
+<mt:if name="FacebookPostAppSecret">
+<mtapp:setting
+    id="FacebookPostAppToken"
+    label="<__trans phrase="App Token">">
+    <input type="password" class="text" id="FacebookPostAppToken" name="FacebookPostAppToken" value="<mt:var name="FacebookPostAppToken" escape="html">" />
+    <mt:setvarblock name="script_param_plugin">?__mode=get_facebook_oauth_access_token&blog_id=</mt:setvarblock>
+    <a target="_blank" href="https://www.facebook.com/dialog/oauth?client_id=<mt:var name="FacebookPostAppID" escape="url">&amp;redirect_uri=<mt:CGIPath escape="url"><mt:AdminScript escape="url"><mt:var name="script_param_plugin" escape="url"><mt:var name="request.blog_id">&amp;state=<mt:var name="FacebookPostAppSecret" escape="url">&amp;&scope=publish_stream%2Coffline_access%2Cmanage_pages&amp;response_type=token&amp;display=popup">
+    <__trans phrase="Get Access Taken">
+    </a>
+</mtapp:setting>
+<mtapp:setting
+    id="FacebookGetAppToken"
+    label="<__trans phrase="Get App Token">">
+    <input type="text" class="text" id="FacebookGetAppToken" name="FacebookGetAppToken" value="<mt:var name="FacebookGetAppToken" escape="html">" />
+</mtapp:setting>
+</mt:if>
+</mt:if>
+<mtapp:setting
+    id="FacebookPostEntry"
+    label="<__trans phrase="Entry">">
+    <label>
+    <input type="checkbox" class="cb" id="FacebookPostEntry" name="FacebookPostEntry" value="1" <mt:if name="FacebookPostEntry">checked="checked"</mt:if>>
+        <__trans phrase="Post entry to Facebook">
+    <input type="hidden" name="FacebookPostEntry" value="0" />
+    </label>
+    <label>
+    <input type="checkbox" class="cb" id="FacebookPostEntry4Page" name="FacebookPostEntry4Page" value="1" <mt:if name="FacebookPostEntry4Page">checked="checked"</mt:if>>
+        <__trans phrase="Post entry to Facebook Page">
+    <input type="hidden" name="FacebookPostEntry4Page" value="0" />
+    </label>
+</mtapp:setting>
+<mtapp:setting
+    id="FacebookPostPage"
+    label="<__trans phrase="Page">">
+    <label>
+    <input type="checkbox" class="cb" id="FacebookPostPage" name="FacebookPostPage" value="1" <mt:if name="FacebookPostPage">checked="checked"</mt:if>>
+        <__trans phrase="Post page to Facebook">
+    <input type="hidden" name="FacebookPostPage" value="0" />
+    </label>
+    <label>
+    <input type="checkbox" class="cb" id="FacebookPostPage4Page" name="FacebookPostPage4Page" value="1" <mt:if name="FacebookPostPage4Page">checked="checked"</mt:if>>
+        <__trans phrase="Post page to Facebook Page">
+    <input type="hidden" name="FacebookPostPage4Page" value="0" />
+    </label>
+</mtapp:setting>
+<mtapp:setting
+    id="FacebookPostPageName"
+    label="<__trans phrase="Facebook Page Name">">
+    <input type="text" class="text" id="FacebookPostPageName" name="FacebookPostPageName" value="<mt:var name="FacebookPostPageName" escape="html">" />
+    <p class="hint"><__trans phrase="Comma-delimited text"></p>
+</mtapp:setting>
+<mtapp:setting
+    id="FacebookPostTemplate"
+    label="<__trans phrase="Title template">">
+    <textarea class="text" rows="6" id="FacebookPostTemplate" name="FacebookPostTemplate"><mt:var name="FacebookPostTemplate" escape="html"></textarea>
+</mtapp:setting>
+<mtapp:setting
+    id="FacebookPostMessageTemplate"
+    label="<__trans phrase="Message template">">
+    <textarea class="text" rows="6" id="FacebookPostMessageTemplate" name="FacebookPostMessageTemplate"><mt:var name="FacebookPostMessageTemplate" escape="html"></textarea>
+</mtapp:setting>
+<mtapp:setting
+    id="FacebookPostCaptionTemplate"
+    label="<__trans phrase="Caption template">">
+    <textarea class="text" rows="6" id="FacebookPostCaptionTemplate" name="FacebookPostCaptionTemplate"><mt:var name="FacebookPostCaptionTemplate" escape="html"></textarea>
+</mtapp:setting>
+<mtapp:setting
+    id="FacebookPostDescriptionTemplate"
+    label="<__trans phrase="Description template">">
+    <textarea class="text" rows="6" id="FacebookPostDescriptionTemplate" name="FacebookPostDescriptionTemplate"><mt:var name="FacebookPostDescriptionTemplate" escape="html"></textarea>
+</mtapp:setting>
+<mtapp:setting
+    id="FacebookPostPictureTemplate"
+    label="<__trans phrase="Picture template">">
+    <textarea class="text" rows="6" id="FacebookPostPictureTemplate" name="FacebookPostPictureTemplate"><mt:var name="FacebookPostPictureTemplate" escape="html"></textarea>
+</mtapp:setting>
+<mtapp:setting
+    id="FacebookPostEntryCustomField"
+    label="<__trans phrase="Entry CustomField's basename">">
+    <input type="text" class="text" id="FacebookPostEntryCustomField" name="FacebookPostEntryCustomField" value="<mt:var name="FacebookPostEntryCustomField" escape="html">" />
+</mtapp:setting>
+<mtapp:setting
+    id="FacebookPostPageCustomField"
+    label="<__trans phrase="Page CustomField's basename">">
+    <input type="text" class="text" id="FacebookPostPageCustomField" name="FacebookPostPageCustomField" value="<mt:var name="FacebookPostPageCustomField" escape="html">" />
+</mtapp:setting>
