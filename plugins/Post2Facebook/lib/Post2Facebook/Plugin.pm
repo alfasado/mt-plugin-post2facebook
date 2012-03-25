@@ -69,7 +69,6 @@ sub _cb_tp_param_edit_entry {
         }
         my $api = 'https://www.facebook.com/dialog/oauth?client_id=' . encode_url( $apl_id ) . '&redirect_uri=' . encode_url( $redirect_uri );
         $api .= '&state=' . encode_url( $secret ) . '&scope=publish_stream%2Coffline_access%2Cmanage_pages&response_type=token&display=popup';
-        $message = $plugin->translate( 'Expiration date of the access token of Facebook has expired.' );
         my $label = $plugin->translate( 'Get Facebook Access Taken' );
         my $api_link = '<a target="_blank" href="<mt:var name="__get_access_token_link__">">' . $label . '</a>';
         $param->{ __get_access_token_link__ } = $api;
