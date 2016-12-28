@@ -9,11 +9,15 @@ our %Lexicon = (
     'Post entry to Facebook' => 'ブログ記事をウォールへポストする',
     'Post page to Facebook' => 'ウェブページをウォールへポストする',
     'App Secret' => 'アプリの秘訣',
-    'Title template' => '投稿タイトル',
-    'Message template' => 'メッセージ',
-    'Caption template' => 'キャプション',
-    'Description template' => 'ディスクリプション',
-    'Picture template' => 'ピクチャ',
+    'Access Taken' => 'アクセストークン',
+    'Get Access Taken' => 'アクセストークンの取得',
+    'Time which acquired the Token' => 'トークンの取得時刻',
+    'Template for Title' => '投稿タイトル',
+    'Template for Message' => 'メッセージ',
+    'Template for Caption' => 'キャプション',
+    'Template for Description' => 'ディスクリプション',
+    'Template for Picture' => 'ピクチャ',
+    'Template for Milestones' => '大切な出来事',
     'Post entry to Facebook Page' => 'ブログ記事をFacebookページへポストする',
     'Post page to Facebook Page' => 'ウェブページをFacebookページへポストする',
     'Facebook Page Name' => 'Facebookページ名',
@@ -24,6 +28,7 @@ our %Lexicon = (
     'Get Access Taken' => 'アクセス・トークンを取得',
     'Entry CustomField\'s basename' => 'ブログ記事投稿判別用カスタムフィールドのbasename',
     'Page CustomField\'s basename' => 'ウェブページ投稿判別用カスタムフィールドのbasename',
+    'Post to Facebook Page\'s Milestones' => 'Facebookページの「大切な出来事」に投稿する',
 );
 
 1;

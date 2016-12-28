@@ -3,7 +3,7 @@ id:   Post2Facebook
 key:  post2facebook
 author_name: Alfasado Inc.
 author_link: http://alfasado.net/
-version: 0.5
+version: 1.0
 l10n_class: Post2Facebook::L10N
 description: <__trans phrase='Post entry to Facebook.'>
 blog_config_template: post2facebook_config.tmpl
@@ -22,6 +22,11 @@ settings:
         default: '<$MTBlogDescription remove_html="1">'
     FacebookPostPictureTemplate:
         default: '<$MTEntryClass setvar="entry_class"$><mt:if name="entry_class" eq="entry"><MTEntryAssets lastn="1"><mt:setvar name="counter" value="1"><$MTAssetURL$></MTEntryAssets><mt:else><MTPageAssets lastn="1"><mt:setvar name="counter" value="1"><$MTAssetURL$></MTPageAssets></mt:if><mt:unless name="counter"><mt:assets tag="Facebook"><$MTAssetURL$></mt:assets></mt:unless>'
+    FacebookPostMilestonesTemplate:
+        default: | 
+                   <$MTEntryClass setvar="entry_class"$><mt:if name="entry_class" eq="entry"><$MTEntryExcerpt remove_html="1"><mt:else><$MTPageExcerpt$></mt:if>
+
+                   <mt:if name="entry_class" eq="entry"><$MTEntryPermalink$><mt:else><$MTPagePermalink$></mt:if>
     FacebookPostEntry:
         default: 1
     FacebookPostPage:
@@ -39,3 +44,18 @@ applications:
     cms:
         methods:
             get_facebook_oauth_access_token: $post2facebook::Post2Facebook::Plugin::_get_facebook_oauth_access_token
+list_actions:
+    entry:
+        entry_to_facebook_page:
+            label: Post to Facebook Page's Milestones
+            code: $post2facebook::Post2Facebook::Plugin::_action_entry_to_facebook_page
+            permit_action:
+                permit_action: publish_post
+            condition: $post2facebook::Post2Facebook::Plugin::_can_post_to_facebook_Page
+    page:
+        entry_to_facebook_page:
+            label: Post to Facebook Page's Milestones
+            code: $post2facebook::Post2Facebook::Plugin::_action_entry_to_facebook_page
+            permit_action:
+                permit_action: manage_pages
+            condition: $post2facebook::Post2Facebook::Plugin::_can_post_to_facebook_Page

@@ -13,7 +13,7 @@
 <mt:if name="FacebookPostAppSecret">
 <mtapp:setting
     id="FacebookPostAppToken"
-    label="<__trans phrase="App Token">">
+    label="<__trans phrase="Access Taken">">
     <input type="password" class="text" id="FacebookPostAppToken" name="FacebookPostAppToken" value="<mt:var name="FacebookPostAppToken" escape="html">" />
     <mt:setvarblock name="script_param_plugin">?__mode=get_facebook_oauth_access_token&blog_id=</mt:setvarblock>
     <a target="_blank" href="https://www.facebook.com/dialog/oauth?client_id=<mt:var name="FacebookPostAppID" escape="url">&amp;redirect_uri=<mt:CGIPath escape="url"><mt:AdminScript escape="url"><mt:var name="script_param_plugin" escape="url"><mt:var name="request.blog_id">&amp;state=<mt:var name="FacebookPostAppSecret" escape="url">&amp;&scope=publish_stream%2Coffline_access%2Cmanage_pages&amp;response_type=token&amp;display=popup">
@@ -22,7 +22,7 @@
 </mtapp:setting>
 <mtapp:setting
     id="FacebookGetAppToken"
-    label="<__trans phrase="Get App Token">">
+    label="<__trans phrase="Time which acquired the Token">">
     <input type="text" class="text" id="FacebookGetAppToken" name="FacebookGetAppToken" value="<mt:var name="FacebookGetAppToken" escape="html">" />
 </mtapp:setting>
 </mt:if>
@@ -63,28 +63,33 @@
 </mtapp:setting>
 <mtapp:setting
     id="FacebookPostTemplate"
-    label="<__trans phrase="Title template">">
+    label="<__trans phrase="Template for Title">">
     <textarea class="text" rows="6" id="FacebookPostTemplate" name="FacebookPostTemplate"><mt:var name="FacebookPostTemplate" escape="html"></textarea>
 </mtapp:setting>
 <mtapp:setting
     id="FacebookPostMessageTemplate"
-    label="<__trans phrase="Message template">">
+    label="<__trans phrase="Template for Message">">
     <textarea class="text" rows="6" id="FacebookPostMessageTemplate" name="FacebookPostMessageTemplate"><mt:var name="FacebookPostMessageTemplate" escape="html"></textarea>
 </mtapp:setting>
 <mtapp:setting
     id="FacebookPostCaptionTemplate"
-    label="<__trans phrase="Caption template">">
+    label="<__trans phrase="Template for Caption">">
     <textarea class="text" rows="6" id="FacebookPostCaptionTemplate" name="FacebookPostCaptionTemplate"><mt:var name="FacebookPostCaptionTemplate" escape="html"></textarea>
 </mtapp:setting>
 <mtapp:setting
     id="FacebookPostDescriptionTemplate"
-    label="<__trans phrase="Description template">">
+    label="<__trans phrase="Template for Description">">
     <textarea class="text" rows="6" id="FacebookPostDescriptionTemplate" name="FacebookPostDescriptionTemplate"><mt:var name="FacebookPostDescriptionTemplate" escape="html"></textarea>
 </mtapp:setting>
 <mtapp:setting
     id="FacebookPostPictureTemplate"
-    label="<__trans phrase="Picture template">">
+    label="<__trans phrase="Template for Picture">">
     <textarea class="text" rows="6" id="FacebookPostPictureTemplate" name="FacebookPostPictureTemplate"><mt:var name="FacebookPostPictureTemplate" escape="html"></textarea>
+</mtapp:setting>
+<mtapp:setting
+    id="FacebookPostMilestonesTemplate"
+    label="<__trans phrase="Template for Milestones">">
+    <textarea class="text" rows="6" id="FacebookPostMilestonesTemplate" name="FacebookPostMilestonesTemplate"><mt:var name="FacebookPostMilestonesTemplate" escape="html"></textarea>
 </mtapp:setting>
 <mtapp:setting
     id="FacebookPostEntryCustomField"
