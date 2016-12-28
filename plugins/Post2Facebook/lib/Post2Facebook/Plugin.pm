@@ -3,7 +3,7 @@ use strict;
 use HTTP::Request::Common;
 use LWP::UserAgent;
 use JSON qw/decode_json/;
-use MT::Util qw( encode_url );
+use MT::Util qw( encode_url ts2epoch );
 
 sub _get_facebook_oauth_access_token {
     my $app = shift;
@@ -96,8 +96,9 @@ sub _cb_scheduled_post_published {
 }
 
 sub _post2facebook {
-    my ( $cb, $app, $obj, $original ) = @_;
+    my ( $cb, $app, $obj, $original, $action ) = @_;
     return 1 unless $obj->status == MT::Entry::RELEASE();
+    $action = '' unless $action;
     my $plugin = MT->component( 'Post2Facebook' );
     my $blog_id = $obj->blog_id;
     my $entry_cf = $plugin->get_config_value( 'FacebookPostEntryCustomField', 'blog:' . $blog_id );
@@ -113,6 +114,7 @@ sub _post2facebook {
             return 1;
         }
     }
+    my $version = MT->version_number;
     my $access_token = $plugin->get_config_value( 'FacebookPostAppToken', 'blog:' . $blog_id );
     my $post_page = $plugin->get_config_value( 'FacebookPostPage', 'blog:' . $blog_id );
     my $post_entry = $plugin->get_config_value( 'FacebookPostEntry', 'blog:' . $blog_id );
@@ -125,13 +127,16 @@ sub _post2facebook {
     my $caption = $plugin->get_config_value( 'FacebookPostCaptionTemplate', 'blog:' . $blog_id );
     my $description = $plugin->get_config_value( 'FacebookPostDescriptionTemplate', 'blog:' . $blog_id );
     my $picture = $plugin->get_config_value( 'FacebookPostPictureTemplate', 'blog:' . $blog_id );
+    my $milestones = $plugin->get_config_value( 'FacebookPostMilestonesTemplate', 'blog:' . $blog_id );
     if ( ( $class eq 'entry' ) && ( (! $post_entry ) && (! $post_entry4page ) ) ) {
-        return 1;
+        return 1 if (! $action );
     }
     if ( ( $class eq 'page' ) && ( (! $post_page ) && (! $post_page4page ) ) ) {
-        return 1;
+        return 1 unless $action;
     }
-    if ( $post_entry || $post_page ) {
+    # my $created_time = __build_entry( $obj, '<$MTEntryDate utc="1" format="%Y-%m-%dT%H:%M:%SZ"$>', 'wall' );
+    my $created_time = ts2epoch( $obj->blog, $obj->authored_on );
+    if ( ( $post_entry || $post_page ) & (! $action ) ) { # || ( $action eq 'wall' ) ) {
         my $name = __build_entry( $obj, $name, 'wall' );
         if ( $name ) {
             my $message = __build_entry( $obj, $message, 'wall' );
@@ -147,6 +152,9 @@ sub _post2facebook {
             $params{ caption } = $caption if ( $caption );
             $params{ description } = $description if ( $description );
             $params{ picture } = $picture if ( $picture );
+            # if ( $action ) {
+            #     $params{ created_time } = $created_time;
+            # }
             my $req = POST( 'https://graph.facebook.com/me/feed', [ %params ] );
             my $ua = LWP::UserAgent->new;
             my $res = $ua->request( $req );
@@ -162,12 +170,21 @@ sub _post2facebook {
             }
         }
     }
-    if ( ( $post_entry4page || $post_page4page ) && $page_name ) {
+    if ( ( ( $post_entry4page || $post_page4page ) && $page_name ) || ( $action eq 'page' ) ) {
         if ( ( $class eq 'entry' ) && (! $post_entry4page ) ) {
-            return 1;
+            if ( $action ne 'page' ) {
+                return 1;
+            }
         }
         if ( ( $class eq 'page' ) && (! $post_page4page ) ) {
-            return 1;
+            if ( $action ne 'page' ) {
+                return 1;
+            }
+        }
+        if ( $version =~ m/^4/ ) {
+            if (! Encode::is_utf8( $page_name ) ) {
+                Encode::_utf8_on( $page_name );
+            }
         }
         my @page_names = split( /,/, $page_name );
         my $api = 'https://graph.facebook.com/me/accounts?access_token=' . $access_token;
@@ -184,26 +201,50 @@ sub _post2facebook {
                 my $page_id = $page->{ id };
                 my $name = __build_entry( $obj, $name, 'page', $page_title );
                 next unless $name;
-                my $message = __build_entry( $obj, $message, 'page', $page_title );
-                my $caption = __build_entry( $obj, $caption, 'page', $page_title );
-                my $description = __build_entry( $obj, $description, 'page', $page_title );
-                my $picture = __build_entry( $obj, $picture, 'page', $page_title );
-                my %params = (
-                    name => $name,
-                    'link' => $obj->permalink,
-                    access_token => $access_token,
-                );
-                $params{ message } = $message if ( $message );
-                $params{ caption } = $caption if ( $caption );
-                $params{ description } = $description if ( $description );
-                $params{ picture } = $picture if ( $picture );
-                my $req = POST( 'https://graph.facebook.com/' . $page_id . '/feed', [ %params ] );
+                my $milestones = __build_entry( $obj, $milestones, 'page', $page_title );
+                my %params;
+                my $req;
+                if ( $action eq 'page' ) {
+                    %params = (
+                        title => $name,
+                        description => $milestones,
+                        start_time => $created_time,
+                        access_token => $access_token,
+                    );
+                    $req = POST( 'https://graph.facebook.com/' . $page_id . '/milestones', [ %params ] );
+                } else {
+                    my $message = __build_entry( $obj, $message, 'page', $page_title );
+                    my $caption = __build_entry( $obj, $caption, 'page', $page_title );
+                    my $description = __build_entry( $obj, $description, 'page', $page_title );
+                    my $picture = __build_entry( $obj, $picture, 'page', $page_title );
+                    %params = (
+                        name => $name,
+                        'link' => $obj->permalink,
+                        access_token => $access_token,
+                    );
+                    $params{ message } = $message if ( $message );
+                    $params{ caption } = $caption if ( $caption );
+                    $params{ description } = $description if ( $description );
+                    $params{ picture } = $picture if ( $picture );
+                    # if ( $action ) {
+                    #     $params{ created_time } = $created_time;
+                    # }
+                    $req = POST( 'https://graph.facebook.com/' . $page_id . '/feed', [ %params ] );
+                }
                 my $ua = LWP::UserAgent->new;
                 my $res = $ua->request( $req );
                 if ( $res->{ _content } =~ /error/ ) {
+                    my $message = $res->{ error }->{ message };
+                    my $type = $res->{ error }->{ type };
+                    if (! $message ) {
+                        my $json = decode_json( $res->{ _content } );
+                        $message = $json->{ error }->{ message };
+                        $type = $json->{ error }->{ type };
+                    }
+                    
                     $app->log( {
                         message => $plugin->translate( 
-                            'An error occurred while trying to post to Facebook : ([_1])[_2]', $res->{ error }->{ type }, $res->{ error }->{ message } ),
+                            'An error occurred while trying to post to Facebook : ([_1])[_2]', $type, $message ),
                         blog_id => $obj->blog_id,
                         author_id => $app->user->id,
                         class => 'post2facebook',
@@ -218,6 +259,33 @@ sub _post2facebook {
         $obj->save or die $obj->errstr;
     }
     return 1;
+}
+
+sub _action_entry_to_facebook_page {
+    my $app = shift;
+    my $plugin = MT->component( 'Post2Facebook' );
+    my $blog = $app->blog;
+    my $user = $app->user;
+    my $perms = __is_user_can( $blog, $user, 'publish_post' );
+    if ( (! $blog ) || (! $perms ) || (! $app->validate_magic() ) ) {
+        return $app->trans_error( 'Permission denied.' );
+    }
+    return _action_post_to_facebook( $app, 'entry', 'page' );
+}
+
+sub _action_post_to_facebook {
+    my ( $app, $class, $scope ) = @_;
+    my @ids = $app->param( 'id' );
+    if (! @ids ) {
+        return $app->trans_error( 'Permission denied.' );
+    }
+    my @entries = MT->model( $class )->load( { blog_id => $app->blog->id,
+                                               id => \@ids,
+                                               status => MT::Entry::RELEASE() } );
+    for my $entry ( @entries ) {
+        _post2facebook( 'action_post_to_facebook', $app, $entry, undef, $scope );
+    }
+    return $app->call_return;
 }
 
 sub __build_entry {
@@ -258,6 +326,37 @@ sub __is_user_can {
         }
     }
     return $perm;
+}
+
+sub _can_post_to_facebook_Page {
+    my $app = MT->instance;
+    my $plugin = MT->component( 'Post2Facebook' );
+    if (! $app->blog ) {
+        return undef;
+    }
+    my $mode = $app->mode;
+    if ( $mode !~ /list/ && $mode ne 'itemset_action' ) {
+        # return undef;
+    }
+    my $blog_id = $app->blog->id;
+    my $class = $app->param( '_type' );
+    my $version = MT->version_number;
+    if ( $version =~ m/^4/ && $mode ne 'itemset_action' ) {
+        $class = $app->mode;
+        $class =~ s/list_//;
+    }
+    if ( $app->mode eq 'view' ) {
+        $class = $app->param( '_type' );
+    }
+    my $post_entry4page = $plugin->get_config_value( 'FacebookPostEntry4Page', 'blog:' . $blog_id );
+    if ( ( $class eq 'entry' ) && ( $post_entry4page ) ) {
+        return 1;
+    }
+    my $post_page4page = $plugin->get_config_value( 'FacebookPostPage4Page', 'blog:' . $blog_id );
+    if ( ( $class eq 'page' ) && ( $post_page4page ) ) {
+        return 1;
+    }
+    return undef;
 }
 
 1;
